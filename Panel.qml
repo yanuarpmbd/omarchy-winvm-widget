@@ -51,11 +51,91 @@ Panel {
       root.bar.centerHoverRevealSuppressed = value
   }
 
+  // Traverses the bar window scene graph to collect all active clickable targets (e.g.
+  // Bluetooth, Wi-Fi, Audio buttons). This bridges the gap for third-party plugins where
+  // PluginBarApi.clickTargets is scoped only to this plugin, allowing seamless 1-click switching.
+  function getBarClickTargets() {
+    var win = root.anchorItem ? (root.anchorItem.QsWindow ? root.anchorItem.QsWindow.window : null) : null
+    if (!win || !win.contentItem) {
+      return (root.bar && root.bar.clickTargets) ? root.bar.clickTargets : []
+    }
+    var targets = []
+    function walk(item) {
+      if (!item) return
+      if (typeof item.triggerPress === "function" && item.visible !== false && item.opacity > 0) {
+        targets.push(item)
+      }
+      var children = item.children
+      if (children && children.length) {
+        for (var i = 0; i < children.length; i++) {
+          walk(children[i])
+        }
+      }
+    }
+    try {
+      walk(win.contentItem)
+    } catch (e) {
+      // Ignore traversal error and fall back
+    }
+    return targets.length > 0 ? targets : ((root.bar && root.bar.clickTargets) ? root.bar.clickTargets : [])
+  }
+
+  QtObject {
+    id: barProxy
+
+    readonly property color foreground: root.bar ? root.bar.foreground : "transparent"
+    readonly property color barForeground: root.bar ? root.bar.barForeground : "transparent"
+    readonly property color background: root.bar ? root.bar.background : "transparent"
+    readonly property color urgent: root.bar ? root.bar.urgent : "transparent"
+    readonly property string fontFamily: root.bar ? root.bar.fontFamily : ""
+    readonly property string position: root.bar ? root.bar.position : "top"
+    readonly property bool vertical: root.bar ? root.bar.vertical : false
+    readonly property int barSize: root.bar ? root.bar.barSize : 0
+    readonly property var activePopout: root.bar ? root.bar.activePopout : null
+
+    readonly property var clickTargets: {
+      if (root.opened) {} // refresh whenever panel opens
+      return root.getBarClickTargets()
+    }
+
+    function targetBelongsToWindow(target, window) {
+      if (root.bar && typeof root.bar.targetBelongsToWindow === "function") {
+        return root.bar.targetBelongsToWindow(target, window)
+      }
+      return !!target && !!window && target.QsWindow && target.QsWindow.window === window
+    }
+
+    function requestPopout(owner) {
+      if (root.bar && typeof root.bar.requestPopout === "function") {
+        root.bar.requestPopout(owner)
+      }
+    }
+
+    function releasePopout(owner) {
+      if (root.bar && typeof root.bar.releasePopout === "function") {
+        root.bar.releasePopout(owner)
+      }
+    }
+
+    function switchPanelFrom(owner, direction) {
+      if (root.bar && typeof root.bar.switchPanelFrom === "function") {
+        return root.bar.switchPanelFrom(owner, direction)
+      }
+      return false
+    }
+
+    function setCenterHoverRevealSuppressed(value) {
+      if (root.bar && typeof root.bar.setCenterHoverRevealSuppressed === "function") {
+        root.bar.setCenterHoverRevealSuppressed(value)
+      }
+    }
+  }
+
   KeyboardPanel {
     id: panel
     anchorItem: root.anchorItem
     owner: root.barIdentity
-    bar: root.bar
+    bar: barProxy
     open: root.opened
     centerOnBar: false
     focusTarget: keyCatcher
