@@ -61,6 +61,10 @@ Item {
     root.startingElapsedSecs = 0
     root.statusMessage = "Starting Windows VM..."
 
+    var sharedFolder = resolvePath(root.sharedFolderPath)
+    var storageFolder = resolvePath("~/.windows")
+    Quickshell.execDetached(["chmod", "00700", sharedFolder, storageFolder])
+
     if (launchMode === "rdp-keepalive") {
       Quickshell.execDetached(["uwsm", "app", "--", "omarchy-windows-vm", "launch", "-k"])
     } else {
