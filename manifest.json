@@ -21,7 +21,7 @@
     "defaults": {
       "autoHide": false,
       "pollInterval": 4,
-      "defaultLaunchMode": "rdp",
+      "defaultLaunchMode": "rdp-keepalive",
       "sharedFolderPath": "~/Windows"
     },
     "schema": [
@@ -43,8 +43,8 @@
         "key": "defaultLaunchMode",
         "type": "string",
         "label": "Default Bar Launch Mode",
-        "description": "Mode when clicking bar widget: rdp, rdp-keepalive, or web",
-        "defaultValue": "rdp"
+        "description": "Mode when clicking bar widget: rdp-keepalive, rdp, or web",
+        "defaultValue": "rdp-keepalive"
       },
       {
         "key": "sharedFolderPath",

@@ -149,8 +149,17 @@ Panel {
       onTabRequested: function(direction) { root.switchPanel(direction) }
       onTextKey: function(t) {
         if (t === "r" || t === "R") { if (root.service) root.service.poll() }
-        else if (t === "l" || t === "L") { if (root.service) { root.service.launchVm("rdp"); root.close() } }
-        else if (t === "k" || t === "K") { if (root.service) { root.service.launchVm("rdp-keepalive"); root.close() } }
+        else if (t === "l" || t === "L") {
+          if (root.service) {
+            if (root.service.vmState === "running") {
+              root.service.attachRdp()
+            } else {
+              root.service.launchVm("rdp-keepalive")
+            }
+            root.close()
+          }
+        }
+        else if (t === "a" || t === "A") { if (root.service) { root.service.launchVm("rdp-autostop"); root.close() } }
         else if (t === "w" || t === "W") { if (root.service) { root.service.openWebConsole(); root.close() } }
         else if (t === "f" || t === "F") { if (root.service) { root.service.openSharedFolder(); root.close() } }
         else if (t === "s" || t === "S") { if (root.service) root.service.stopVm() }
@@ -423,32 +432,36 @@ Panel {
           width: parent.width
           spacing: Style.space(6)
 
+          // When stopped: Launch Windows VM (Keep-Alive)
           Button {
+            visible: root.service && root.service.vmState === "stopped"
             width: parent.width
-            text: "Launch FreeRDP [L]"
+            text: "Launch Windows VM [L]"
             iconText: "󰍲"
-            tooltipText: "Start Windows VM & connect via FreeRDP (auto-stops on window close)"
-            leftAlign: true
-            bordered: true
-            fontFamily: root.contentFontFamily
-            fontSize: Style.font.body
-            onClicked: {
-              if (root.service) root.service.launchVm("rdp")
-              root.close()
-            }
-          }
-
-          Button {
-            width: parent.width
-            text: "FreeRDP Keep-Alive [K]"
-            iconText: "󱐋"
-            tooltipText: "Launch FreeRDP and keep VM running in background when closed (-k)"
+            tooltipText: "Start Windows VM and connect FreeRDP (stays running in background)"
             leftAlign: true
             bordered: true
             fontFamily: root.contentFontFamily
             fontSize: Style.font.body
             onClicked: {
               if (root.service) root.service.launchVm("rdp-keepalive")
+              root.close()
+            }
+          }
+
+          // When running and RDP client not attached: Attach FreeRDP
+          Button {
+            visible: root.service && root.service.vmState === "running" && !root.service.rdpClientRunning
+            width: parent.width
+            text: "Attach FreeRDP [L]"
+            iconText: "󰍲"
+            tooltipText: "Connect FreeRDP window to the active Windows VM"
+            leftAlign: true
+            bordered: true
+            fontFamily: root.contentFontFamily
+            fontSize: Style.font.body
+            onClicked: {
+              if (root.service) root.service.attachRdp()
               root.close()
             }
           }
@@ -479,6 +492,22 @@ Panel {
             fontSize: Style.font.body
             onClicked: {
               if (root.service) root.service.openSharedFolder()
+              root.close()
+            }
+          }
+
+          Button {
+            visible: root.service && root.service.vmState === "stopped"
+            width: parent.width
+            text: "Launch (Auto-Stop on Close) [A]"
+            iconText: "󱐋"
+            tooltipText: "Start Windows VM and auto-terminate container when FreeRDP closes"
+            leftAlign: true
+            bordered: true
+            fontFamily: root.contentFontFamily
+            fontSize: Style.font.body
+            onClicked: {
+              if (root.service) root.service.launchVm("rdp-autostop")
               root.close()
             }
           }

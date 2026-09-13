@@ -49,28 +49,37 @@ Item {
     }
   }
 
+  function launcherScriptPath() {
+    var url = String(Qt.resolvedUrl("winvm-launcher.sh"))
+    return url.replace(/^file:\/\//, "")
+  }
+
   function launchVm(mode) {
     lastError = ""
-    var launchMode = mode || "rdp"
+    var launchMode = mode || "rdp-keepalive"
     if (launchMode === "web") {
       openWebConsole()
       return
     }
 
-    root.vmState = "starting"
-    root.startingElapsedSecs = 0
-    root.statusMessage = "Starting Windows VM..."
+    if (launchMode !== "attach") {
+      root.vmState = "starting"
+      root.startingElapsedSecs = 0
+      root.statusMessage = "Starting Windows VM..."
+    } else {
+      root.statusMessage = "Attaching FreeRDP..."
+    }
 
     var sharedFolder = resolvePath(root.sharedFolderPath)
     var storageFolder = resolvePath("~/.windows")
-    Quickshell.execDetached(["chmod", "00700", sharedFolder, storageFolder])
+    Quickshell.execDetached(["chmod", "u=rwx,go=", sharedFolder, storageFolder])
 
-    if (launchMode === "rdp-keepalive") {
-      Quickshell.execDetached(["uwsm", "app", "--", "omarchy-windows-vm", "launch", "-k"])
-    } else {
-      Quickshell.execDetached(["uwsm", "app", "--", "omarchy-windows-vm", "launch"])
-    }
+    Quickshell.execDetached(["uwsm", "app", "--", launcherScriptPath(), launchMode])
     poll()
+  }
+
+  function attachRdp() {
+    launchVm("attach")
   }
 
   function stopVm() {
@@ -87,6 +96,7 @@ Item {
 
   function openSharedFolder() {
     var fullPath = resolvePath(root.sharedFolderPath)
+    Quickshell.execDetached(["chmod", "u=rwx,go=", fullPath])
     Quickshell.execDetached(["xdg-open", fullPath])
   }
 
@@ -100,9 +110,18 @@ Item {
     var isListening = has3389 || has8006
 
     if (isListening) {
-      if (root.vmState !== "running") {
+      if (root.vmState === "starting") {
+        if (root.startingElapsedSecs > 40 || root.rdpClientRunning) {
+          root.vmState = "running"
+          root.statusMessage = ""
+        } else {
+          root.statusMessage = "Booting Windows (" + root.startingElapsedSecs + "s)..."
+        }
+      } else {
         root.vmState = "running"
-        root.statusMessage = ""
+        if (root.statusMessage.indexOf("Booting") !== -1 || root.statusMessage.indexOf("Starting") !== -1) {
+          root.statusMessage = ""
+        }
       }
     } else {
       if (root.vmState === "starting") {
@@ -115,6 +134,7 @@ Item {
         root.statusMessage = ""
       } else {
         root.vmState = "stopped"
+        root.statusMessage = ""
       }
     }
   }

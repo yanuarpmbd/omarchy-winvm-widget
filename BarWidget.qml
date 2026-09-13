@@ -10,7 +10,7 @@ BarWidget {
 
   readonly property bool autoHide: Boolean(setting("autoHide", false))
   readonly property int pollInterval: Number(setting("pollInterval", 4))
-  readonly property string defaultLaunchMode: String(setting("defaultLaunchMode", "rdp"))
+  readonly property string defaultLaunchMode: String(setting("defaultLaunchMode", "rdp-keepalive"))
   readonly property string sharedFolderPath: String(setting("sharedFolderPath", "~/Windows"))
 
   WinVmService {

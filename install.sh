@@ -18,6 +18,8 @@ cp -f "$PLUGIN_DIR/manifest.json" "$TARGET_DIR/"
 cp -f "$PLUGIN_DIR/BarWidget.qml" "$TARGET_DIR/"
 cp -f "$PLUGIN_DIR/Panel.qml" "$TARGET_DIR/"
 cp -f "$PLUGIN_DIR/WinVmService.qml" "$TARGET_DIR/"
+cp -f "$PLUGIN_DIR/winvm-launcher.sh" "$TARGET_DIR/"
+chmod +x "$TARGET_DIR/winvm-launcher.sh"
 cp -f "$PLUGIN_DIR/README.md" "$TARGET_DIR/"
 
 # Step 3: Rescan and enable plugin
