@@ -72,7 +72,8 @@ Item {
 
     var sharedFolder = resolvePath(root.sharedFolderPath)
     var storageFolder = resolvePath("~/.windows")
-    Quickshell.execDetached(["chmod", "u=rwx,go=", sharedFolder, storageFolder])
+    Quickshell.execDetached(["chmod", "00700", sharedFolder, storageFolder])
+    Quickshell.execDetached(["chmod", "a-s,u=rwx,go=", sharedFolder, storageFolder])
 
     Quickshell.execDetached(["uwsm", "app", "--", launcherScriptPath(), launchMode])
     poll()
@@ -96,7 +97,7 @@ Item {
 
   function openSharedFolder() {
     var fullPath = resolvePath(root.sharedFolderPath)
-    Quickshell.execDetached(["chmod", "u=rwx,go=", fullPath])
+    Quickshell.execDetached(["chmod", "a-s,u=rwx,go=", fullPath])
     Quickshell.execDetached(["xdg-open", fullPath])
   }
 
