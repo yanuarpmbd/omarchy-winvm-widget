@@ -28,7 +28,7 @@ BarWidget {
   function togglePanel() { if (panelLoader.item) panelLoader.item.toggle() }
   function closeForPopoutSwitch() { if (panelLoader.item) panelLoader.item.closeForPopoutSwitch() }
 
-  readonly property real openPanelIndicatorWidth: button.labelWidth
+  readonly property real openPanelIndicatorWidth: button.slotSize
   readonly property real openPanelIndicatorHeight: Math.max(Style.space(10), Math.round(Style.bar.iconSlot * 0.55))
 
   function injectPanel() {
@@ -81,87 +81,52 @@ BarWidget {
       s += "RDP (Port 3389): " + (winVm.port3389Open ? "Active" : "Inactive") + "\n"
       s += "Web (Port 8006): " + (winVm.port8006Open ? "Active" : "Inactive") + "\n"
       s += "Client: " + (winVm.rdpClientRunning ? "Connected" : "Disconnected") + "\n"
-      s += "Left-click: Controls | Right-click: Controls"
+      s += "Click: Windows VM Controls"
     } else if (winVm.vmState === "starting") {
       s += "Starting up...\nWaiting for KVM / Docker ports"
     } else if (winVm.vmState === "stopping") {
       s += "Stopping container..."
     } else {
-      s += "Stopped\nClick to launch or open controls"
+      s += "Stopped\nClick to open controls or launch"
     }
     return s
   }
 
-  WidgetButton {
+  BarIconButton {
     id: button
     anchors.fill: parent
     bar: root.bar
-    labelVisible: false
-    visible: root.visible
-    hasVisualContent: root.visible
-    keepSpace: false
     tooltipText: root.buildTooltip()
-
-    fixedWidth: root.visible ? (root.vertical ? root.barSize : (contentRow.implicitWidth + scaledHorizontalMargin * 2)) : 0
-    fixedHeight: root.visible ? (root.vertical ? (contentRow.implicitHeight + scaledVerticalPadding * 2) : root.barSize) : 0
 
     onPressed: function(b) {
       root.togglePanel()
     }
 
-    Row {
-      id: contentRow
-      anchors.centerIn: parent
-      spacing: Style.space(5)
-      visible: root.visible
+    iconComponent: Component {
+      Item {
+        anchors.fill: parent
 
-      Text {
-        id: winIcon
-        anchors.verticalCenter: parent.verticalCenter
-        text: "󰍲"
-        font.family: button.fontFamily
-        font.pixelSize: Style.font.body
-        color: {
-          if (winVm.vmState === "running") return Color.accent
-          if (winVm.vmState === "starting") return Color.accent
-          if (winVm.vmState === "stopping") return (root.bar ? root.bar.urgent : Color.urgent)
-          return Color.muted
-        }
-
-        SequentialAnimation on opacity {
-          running: winVm.isTransitioning
-          loops: Animation.Infinite
-          NumberAnimation { from: 1.0; to: 0.3; duration: 600; easing.type: Easing.InOutQuad }
-          NumberAnimation { from: 0.3; to: 1.0; duration: 600; easing.type: Easing.InOutQuad }
-        }
-      }
-
-      Text {
-        id: winLabel
-        anchors.verticalCenter: parent.verticalCenter
-        visible: !root.vertical
-        text: {
-          if (winVm.vmState === "running") {
-            return winVm.rdpClientRunning ? "WIN (RDP)" : "WIN"
+        Text {
+          id: winIcon
+          anchors.centerIn: parent
+          text: "󰍲"
+          font.family: button.fontFamily
+          font.pixelSize: button.fontSize
+          renderType: Text.NativeRendering
+          color: {
+            if (winVm.vmState === "running") return Color.accent
+            if (winVm.vmState === "starting") return Color.accent
+            if (winVm.vmState === "stopping") return (root.bar ? root.bar.urgent : Color.urgent)
+            return Color.muted
           }
-          if (winVm.vmState === "starting") return "BOOT…"
-          if (winVm.vmState === "stopping") return "STOP…"
-          return "WIN"
-        }
-        color: winVm.vmState === "running" ? button.foreground : Color.muted
-        font.family: button.fontFamily
-        font.pixelSize: Style.font.caption
-        font.bold: winVm.vmState === "running"
-        renderType: Text.NativeRendering
-      }
 
-      Rectangle {
-        visible: winVm.vmState === "running"
-        anchors.verticalCenter: parent.verticalCenter
-        width: Style.space(4)
-        height: Style.space(4)
-        radius: Style.space(2)
-        color: winVm.rdpClientRunning ? Color.accent : (root.bar ? root.bar.barForeground : Color.foreground)
+          SequentialAnimation on opacity {
+            running: winVm.isTransitioning
+            loops: Animation.Infinite
+            NumberAnimation { from: 1.0; to: 0.3; duration: 600; easing.type: Easing.InOutQuad }
+            NumberAnimation { from: 0.3; to: 1.0; duration: 600; easing.type: Easing.InOutQuad }
+          }
+        }
       }
     }
   }
