@@ -75,7 +75,9 @@ case "$MODE" in
     fi
 
     echo "[$(date '+%Y-%m-%d %H:%M:%S')] Attaching FreeRDP to running VM..." >> "$LOG_FILE"
-    run_freerdp
+    if ! run_freerdp; then
+      notify-send -u critical "Windows VM" "FreeRDP authentication failed! Check ~/.config/windows/credentials or log: ~/.cache/winvm-freerdp.log"
+    fi
     exit 0
     ;;
 
