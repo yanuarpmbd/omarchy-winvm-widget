@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-PLUGIN_ID="bol.winvm"
+PLUGIN_ID="io.github.yanuarpmbd.winvm"
 PLUGIN_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 TARGET_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/omarchy/plugins/$PLUGIN_ID"
 
