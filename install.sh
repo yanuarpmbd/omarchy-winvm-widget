@@ -10,6 +10,11 @@ echo "=== Installing Omarchy Windows VM Widget ($PLUGIN_ID) ==="
 # Step 1: Validate plugin
 echo "Validating plugin files..."
 omarchy plugin validate "$PLUGIN_DIR"
+if command -v qmllint >/dev/null 2>&1; then
+  echo "Checking QML with qmllint..."
+  qmllint -I "${OMARCHY_PATH:-/usr/share/omarchy}/shell" \
+    "$PLUGIN_DIR/BarWidget.qml" "$PLUGIN_DIR/Panel.qml" "$PLUGIN_DIR/WinVmService.qml"
+fi
 
 # Step 2: Target directory sync
 echo "Installing to $TARGET_DIR..."
@@ -21,6 +26,7 @@ cp -f "$PLUGIN_DIR/WinVmService.qml" "$TARGET_DIR/"
 cp -f "$PLUGIN_DIR/winvm-launcher.sh" "$TARGET_DIR/"
 chmod +x "$TARGET_DIR/winvm-launcher.sh"
 cp -f "$PLUGIN_DIR/README.md" "$TARGET_DIR/"
+[[ -f "$PLUGIN_DIR/LICENSE" ]] && cp -f "$PLUGIN_DIR/LICENSE" "$TARGET_DIR/"
 
 # Step 3: Rescan and enable plugin
 echo "Registering plugin with Omarchy..."

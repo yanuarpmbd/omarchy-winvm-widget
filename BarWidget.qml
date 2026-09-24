@@ -25,7 +25,8 @@ BarWidget {
 
   function open() { if (panelLoader.item) panelLoader.item.open() }
   function close() { if (panelLoader.item) panelLoader.item.close() }
-  function togglePanel() { if (panelLoader.item) panelLoader.item.toggle() }
+  function toggle() { if (panelLoader.item) panelLoader.item.toggle() }
+  function togglePanel() { toggle() }
   function closeForPopoutSwitch() { if (panelLoader.item) panelLoader.item.closeForPopoutSwitch() }
 
   readonly property real openPanelIndicatorWidth: button.slotSize
@@ -59,13 +60,13 @@ BarWidget {
   IpcHandler {
     target: "bol.winvm"
 
-    function open(): void { root.open() }
-    function close(): void { root.close() }
-    function toggle(): void { root.togglePanel() }
-    function launch(mode: string): void { winVm.launchVm(mode || root.defaultLaunchMode) }
-    function stop(): void { winVm.stopVm() }
+    function open() { root.open() }
+    function close() { root.close() }
+    function toggle() { root.toggle() }
+    function launch(mode: string) { winVm.launchVm(mode || root.defaultLaunchMode) }
+    function stop() { winVm.stopVm() }
     function status(): string { return winVm.vmState }
-    function refresh(): void { winVm.poll() }
+    function refresh() { winVm.poll() }
   }
 
   visible: autoHide ? (winVm.vmState !== "stopped") : true

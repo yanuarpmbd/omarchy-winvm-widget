@@ -23,24 +23,35 @@ A native Quickshell status bar widget and popover control panel for managing, la
 
 ## Installation
 
-Run the installation script:
+### Via Omarchy CLI (Remote Git Repository)
+```bash
+omarchy plugin add https://github.com/yanuarpmbd/omarchy-winvm-widget.git --enable
+omarchy bar move bol.winvm --section right
+```
 
+### Local Development / Manual Install
+Clone or open this repository, then run the installation script:
 ```bash
 ./install.sh
 ```
 
 This will:
-1. Validate the plugin against the Omarchy plugin manifest schema.
-2. Install files to `~/.config/omarchy/plugins/bol.winvm/`.
-3. Enable the widget in the right section of your top bar.
-4. Restart the Omarchy shell to activate the widget immediately.
+1. Validate the plugin against the Omarchy plugin manifest schema (`omarchy plugin validate`).
+2. Verify all QML files with `qmllint`.
+3. Install files to `~/.config/omarchy/plugins/bol.winvm/`.
+4. Enable the widget in the right section of your top bar.
+5. Restart the Omarchy shell to activate the widget immediately.
 
 ---
 
 ## Uninstallation
 
-To cleanly remove the widget:
+Via Omarchy CLI:
+```bash
+omarchy plugin remove bol.winvm
+```
 
+Or via local script:
 ```bash
 ./uninstall.sh
 ```
