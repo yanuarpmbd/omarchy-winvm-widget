@@ -31,31 +31,20 @@ omarchy plugin add https://github.com/yanuarpmbd/omarchy-winvm-widget.git --enab
 omarchy bar move io.github.yanuarpmbd.winvm --section right
 ```
 
-### Local Development / Manual Install
-Clone or open this repository, then run the installation script:
+### Local Development (Live Sync)
+If you are developing or testing changes locally:
 ```bash
-./install.sh
+./dev/sync
 ```
-
-This will:
-1. Validate the plugin against the Omarchy plugin manifest schema (`omarchy plugin validate`).
-2. Verify all QML files with `qmllint`.
-3. Install files to `~/.config/omarchy/plugins/io.github.yanuarpmbd.winvm/`.
-4. Enable the widget in the right section of your top bar.
-5. Restart the Omarchy shell to activate the widget immediately.
+This script validates all manifests with `omarchy plugin validate`, checks QML with `qmllint`, syncs files to `~/.config/omarchy/plugins/io.github.yanuarpmbd.winvm/`, and reloads the Omarchy shell.
 
 ---
 
 ## Uninstallation
 
-Via Omarchy CLI:
+To remove the plugin from Omarchy:
 ```bash
 omarchy plugin remove io.github.yanuarpmbd.winvm
-```
-
-Or via local script:
-```bash
-./uninstall.sh
 ```
 
 ---
