@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # ==============================================================================
 # winvm-launcher.sh - Smart launcher wrapper for Omarchy Windows VM
-# Part of io.github.yanuarpmbd.winvm plugin
+# Part of bol.winvm plugin
 # ==============================================================================
 set -euo pipefail
 

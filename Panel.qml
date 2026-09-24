@@ -5,8 +5,8 @@ import qs.Ui
 
 Panel {
   id: root
-  moduleName: "io.github.yanuarpmbd.winvm"
-  ipcTarget: "io.github.yanuarpmbd.winvm"
+  moduleName: "bol.winvm"
+  ipcTarget: "bol.winvm"
   manageIpc: false
 
   property var anchorItem: null

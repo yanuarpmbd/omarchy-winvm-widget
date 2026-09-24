@@ -6,7 +6,7 @@ import qs.Ui
 
 BarWidget {
   id: root
-  moduleName: "io.github.yanuarpmbd.winvm"
+  moduleName: "bol.winvm"
 
   readonly property bool autoHide: Boolean(setting("autoHide", false))
   readonly property int pollInterval: Number(setting("pollInterval", 4))
@@ -58,7 +58,7 @@ BarWidget {
 
   // CLI / Shell IPC interface
   IpcHandler {
-    target: "io.github.yanuarpmbd.winvm"
+    target: "bol.winvm"
 
     function open() { root.open() }
     function close() { root.close() }
