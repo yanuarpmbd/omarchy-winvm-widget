@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "id": "bol.winvm",
+  "id": "io.github.yanuarpmbd.winvm",
   "name": "Windows VM Manager",
   "version": "1.0.0",
-  "author": "bol",
+  "author": "Yanuar Pambudi",
   "license": "MIT",
   "description": "Native Quickshell bar widget and control panel for Omarchy Windows VM",
   "kinds": [

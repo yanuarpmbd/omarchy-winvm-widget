@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # ==============================================================================
 # winvm-stats.sh - Fast unprivileged VM resource & allocation stats extractor
-# Part of bol.winvm plugin
+# Part of io.github.yanuarpmbd.winvm plugin
 # ==============================================================================
 set -euo pipefail
 

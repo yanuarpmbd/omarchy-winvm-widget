@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-PLUGIN_ID="bol.winvm"
+PLUGIN_ID="io.github.yanuarpmbd.winvm"
 TARGET_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/omarchy/plugins/$PLUGIN_ID"
 
 echo "=== Uninstalling Omarchy Windows VM Widget ($PLUGIN_ID) ==="
