@@ -21,15 +21,6 @@ Item {
   readonly property bool isRunning: vmState === "running"
   readonly property bool isTransitioning: vmState === "starting" || vmState === "stopping"
 
-  // Resource metrics & allocation properties
-  property real cpuUsagePct: 0
-  property real memUsageGb: 0
-  property real memUsagePct: 0
-  property string allocatedRam: "8 GB"
-  property int allocatedCores: 4
-  property string allocatedDisk: "128 GB"
-  property string hostDiskUsage: "0 GB"
-
   function formatUptime(secs) {
     var s = secs % 60
     var m = Math.floor(secs / 60) % 60
@@ -49,35 +40,12 @@ Item {
     return p
   }
 
-  function statsScriptPath() {
-    var url = String(Qt.resolvedUrl("winvm-stats.sh"))
-    return url.replace(/^file:\/\//, "")
-  }
-
-  function handleStatsOutput(output) {
-    try {
-      var data = JSON.parse(output.trim())
-      root.cpuUsagePct = Number(data.cpuPct || 0)
-      root.memUsageGb = Number(data.memGb || 0)
-      root.memUsagePct = Number(data.memPct || 0)
-      if (data.allocRam) root.allocatedRam = String(data.allocRam)
-      if (data.allocCores) root.allocatedCores = Number(data.allocCores)
-      if (data.allocDisk) root.allocatedDisk = String(data.allocDisk)
-      if (data.hostDisk) root.hostDiskUsage = String(data.hostDisk)
-    } catch (e) {
-      // ignore
-    }
-  }
-
   function poll() {
     if (!probeProcess.running) {
       probeProcess.running = true
     }
     if (!rdpCheckProcess.running) {
       rdpCheckProcess.running = true
-    }
-    if (!statsProcess.running) {
-      statsProcess.running = true
     }
   }
 
@@ -191,18 +159,6 @@ Item {
     stdout: StdioCollector { waitForEnd: true }
     onExited: function(code) {
       root.rdpClientRunning = (code === 0)
-    }
-  }
-
-  // Process probe for VM resources & allocations
-  Process {
-    id: statsProcess
-    command: [root.statsScriptPath()]
-    stdout: StdioCollector {
-      waitForEnd: true
-      onStreamFinished: {
-        root.handleStatsOutput(String(text || ""))
-      }
     }
   }
 
