@@ -3,6 +3,8 @@
 A native Quickshell status bar widget and popover control panel for managing, launching, and monitoring the containerized Windows VM on **Omarchy Quattro** (`omarchy-shell`).
 
 ---
+![alt text](image-stop.png)
+![alt text](image-start.png)
 
 ## Features
 
