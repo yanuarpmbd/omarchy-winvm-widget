@@ -42,7 +42,7 @@ Item {
   function resolvePath(path) {
     var p = String(path || "").trim()
     if (p === "") p = "~/Windows"
-    var home = Quickshell.env("HOME") || "/home/bol"
+    var home = Quickshell.env("HOME") || ""
     if (p.startsWith("~/")) {
       return home + "/" + p.substring(2)
     }
@@ -102,11 +102,6 @@ Item {
       root.statusMessage = "Attaching FreeRDP..."
     }
 
-    var sharedFolder = resolvePath(root.sharedFolderPath)
-    var storageFolder = resolvePath("~/.windows")
-    Quickshell.execDetached(["chmod", "00700", sharedFolder, storageFolder])
-    Quickshell.execDetached(["chmod", "a-s,u=rwx,go=", sharedFolder, storageFolder])
-
     Quickshell.execDetached(["uwsm", "app", "--", launcherScriptPath(), launchMode])
     poll()
   }
@@ -129,7 +124,6 @@ Item {
 
   function openSharedFolder() {
     var fullPath = resolvePath(root.sharedFolderPath)
-    Quickshell.execDetached(["chmod", "a-s,u=rwx,go=", fullPath])
     Quickshell.execDetached(["xdg-open", fullPath])
   }
 

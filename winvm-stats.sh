@@ -6,7 +6,8 @@
 set -euo pipefail
 
 IMG_PATH="${HOME}/.windows/data.img"
-SPECS_CACHE="${HOME}/.config/windows/vm-specs.json"
+SPECS_CACHE="${XDG_CACHE_HOME:-$HOME/.cache}/winvm-specs.json"
+LEGACY_SPECS_CACHE="${XDG_CONFIG_HOME:-$HOME/.config}/windows/vm-specs.json"
 
 alloc_disk="128 GB"
 host_disk="0 GB"
@@ -26,6 +27,11 @@ if [[ -f "$SPECS_CACHE" ]]; then
   r=$(grep -oP '"allocated_ram":\s*"\K[^"]+' "$SPECS_CACHE" 2>/dev/null || true)
   [[ -n "$r" ]] && alloc_ram="$r"
   c=$(grep -oP '"allocated_cores":\s*\K[0-9]+' "$SPECS_CACHE" 2>/dev/null || true)
+  [[ -n "$c" ]] && alloc_cores="$c"
+elif [[ -f "$LEGACY_SPECS_CACHE" ]]; then
+  r=$(grep -oP '"allocated_ram":\s*"\K[^"]+' "$LEGACY_SPECS_CACHE" 2>/dev/null || true)
+  [[ -n "$r" ]] && alloc_ram="$r"
+  c=$(grep -oP '"allocated_cores":\s*\K[0-9]+' "$LEGACY_SPECS_CACHE" 2>/dev/null || true)
   [[ -n "$c" ]] && alloc_cores="$c"
 fi
 

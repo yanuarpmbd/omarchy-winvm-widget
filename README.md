@@ -73,7 +73,7 @@ Settings can be customized in your Omarchy shell configuration or via the plugin
 |---|---|---|---|
 | `autoHide` | boolean | `false` | Hide widget from the bar when VM is stopped |
 | `pollInterval` | number | `4` | Status check interval in seconds |
-| `defaultLaunchMode` | string | `"rdp"` | Default mode (`"rdp"`, `"rdp-keepalive"`, or `"web"`) |
+| `defaultLaunchMode` | string | `"rdp-keepalive"` | Default mode (`"rdp-keepalive"`, `"rdp"`, or `"web"`) |
 | `sharedFolderPath` | string | `"~/Windows"` | Host folder path mounted into Windows VM |
 
 ---

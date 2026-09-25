@@ -9,14 +9,6 @@ MODE="${1:-rdp-keepalive}"
 LOG_FILE="${XDG_CACHE_HOME:-$HOME/.cache}/winvm-freerdp.log"
 mkdir -p "$(dirname "$LOG_FILE")"
 
-# 1. Normalize directory permissions (ensure 700 and strip setgid bit a-s)
-SHARED_DIR="${HOME}/Windows"
-STORAGE_DIR="${HOME}/.windows"
-
-mkdir -p "$SHARED_DIR" "$STORAGE_DIR"
-chmod 00700 "$SHARED_DIR" "$STORAGE_DIR" 2>/dev/null || true
-chmod a-s,u=rwx,go= "$SHARED_DIR" "$STORAGE_DIR" 2>/dev/null || true
-
 # Helper: check if container is listening on ports
 is_container_running() {
   ss -Htln '( sport = :3389 or sport = :8006 )' 2>/dev/null | grep -qE ":3389|:8006"
@@ -26,7 +18,7 @@ is_container_running() {
 run_freerdp() {
   local win_user="docker"
   local win_pass="admin"
-  local creds_file="${HOME}/.config/windows/credentials"
+  local creds_file="${XDG_CONFIG_HOME:-$HOME/.config}/windows/credentials"
 
   if [[ -f "$creds_file" ]]; then
     local u p
@@ -36,7 +28,7 @@ run_freerdp() {
     [[ -n "$p" ]] && win_pass="$p"
   fi
 
-  local krb5_conf="${HOME}/.config/windows/krb5.conf"
+  local krb5_conf="${XDG_CONFIG_HOME:-$HOME/.config}/windows/krb5.conf"
   if [[ ! -f "$krb5_conf" ]]; then
     mkdir -p "$(dirname "$krb5_conf")"
     printf '[libdefaults]\n  dns_lookup_kdc = false\n  dns_lookup_realm = false\n' >"$krb5_conf"
