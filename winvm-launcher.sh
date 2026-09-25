@@ -54,12 +54,32 @@ run_freerdp() {
     rdp_scale="/scale:140"
   fi
 
-  echo "[$(date '+%Y-%m-%d %H:%M:%S')] Executing xfreerdp3 (user: $win_user)..." >> "$LOG_FILE"
-  xfreerdp3 /u:"$win_user" /p:"$win_pass" /v:127.0.0.1:3389 \
-    -grab-keyboard /sound /microphone /clipboard /cert:ignore \
-    /title:"Windows VM - Omarchy" /dynamic-resolution /gfx:AVC444 \
-    /floatbar:sticky:off,default:visible,show:fullscreen \
-    $rdp_scale >> "$LOG_FILE" 2>&1
+  echo "[$(date '+%Y-%m-%d %H:%M:%S')] Executing xfreerdp3 securely via /args-from:stdin (user: $win_user)..." >> "$LOG_FILE"
+
+  local -a rdp_args=(
+    "/u:$win_user"
+    "/p:$win_pass"
+    "/v:127.0.0.1:3389"
+    "-grab-keyboard"
+    "/sound"
+    "/microphone"
+    "/clipboard"
+    "/cert:ignore"
+    "/title:Windows VM - Omarchy"
+    "/dynamic-resolution"
+    "/gfx:AVC444"
+    "/floatbar:sticky:off,default:visible,show:fullscreen"
+  )
+  if [[ -n "$rdp_scale" ]]; then
+    rdp_args+=("$rdp_scale")
+  fi
+
+  # Pass arguments securely via stdin (/args-from:stdin) so credentials are never
+  # exposed in the process command line (e.g. ps aux, /proc/<pid>/cmdline)
+  printf '%s\n' "${rdp_args[@]}" | xfreerdp3 /args-from:stdin >> "$LOG_FILE" 2>&1
+  local rdp_status=$?
+  unset win_pass rdp_args
+  return $rdp_status
 }
 
 case "$MODE" in
